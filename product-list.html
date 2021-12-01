@@ -1,0 +1,92 @@
+
+<html lang="en">
+ 
+<head>
+ <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Product List</title>
+  <link rel="stylesheet" href="product-list.css">
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <style>
+table, th, td {
+  border: 1px solid black;
+}
+</style>
+</head>
+<body>
+
+  <main id="main-holder">
+    <h1>Product List</h1>
+	<div id="receipts" style="display:contents">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Price</th>
+					<th>Category</th>
+					<th>Quantity</th> 
+				</tr>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+	
+	 <button type="button" class="btn btn-primary" onclick='fetchAllProduct("@share.Id")'>
+                                        View
+                                    </button>
+	</div>
+  </main>
+</body>
+
+<script>
+function fetchAllProduct(documentShareId) {
+		$("#receipts tbody").empty();
+        //console.log('http call: ' + uri + "/" + documentShareId)
+        $.ajax({
+            url: "http://localhost:8089/product/product-list",
+            type: "GET",
+            contentType: "application/json;",
+			headers:
+                    {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Credentials': 'true',
+                        'requester': '{"username": "admin@asd.com","authorities": "ROLE_ADMIN"}'
+
+                    },
+            cache: false,
+            success: function (receipts) {
+                //console.log(receipts);
+
+                $(receipts.data).each(function (index, item) {
+                    console.log("item " + item);
+                    //console.log(receipts[index]);
+
+                    $('#receipts tbody').append(
+                        '<tr><td>' + item.name +
+                        '</td><td>' + item.price +
+                        '</td><td>' + item.category +
+                        '</td><td>' + item.quantity + 
+                        '</td></tr>'
+                    )
+
+                });
+
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log(XMLHttpRequest);
+                console.log(textStatus);
+                console.log(errorThrown);
+
+            }
+
+        });
+    }
+    
+</script>
+</html>
