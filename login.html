@@ -32,8 +32,6 @@
         let username = document.getElementById("username-field").value
         let password = document.getElementById("password-field").value
 
-		console.log(username);
-		console.log(password);
 		
         $.ajax(
             {
@@ -57,7 +55,12 @@
                 dataType: 'json',
                 success: function (response)
                 {
-					location.href='product.html'
+					console.log(response);
+					if (response.message === "Success"){
+						location.href='product.html';
+					} else {
+						alert("Unauthorized User");
+					}
 
                 }
                 , error: function (error) {
