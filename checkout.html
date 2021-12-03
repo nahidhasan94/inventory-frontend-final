@@ -79,6 +79,11 @@ table, th, td {
 </body>
 
 <script>
+	$('#receipts').on('click', 'tbody tr', function() {
+
+		console.log("Number of rows : " + size);
+		//console.log('API row values : ', table.row(this).data());
+	})
 function fetchAllProducts(documentShareId) {
 		$("#receipts tbody").empty();
         //console.log('http call: ' + uri + "/" + documentShareId)
