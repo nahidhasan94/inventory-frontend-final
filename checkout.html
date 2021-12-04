@@ -19,20 +19,25 @@ table, th, td {
   float: left;
   width: 50%;
 }
+
+.table tr:hover {
+   background-color: #C0C0C0;
+   cursor:pointer;
+}
 </style>
 </head>
-<body>
+<body onload="fetchAllProducts()">
+
+
  
     <h1>Checkout</h1>
 	<div class="row">
-		<button type="button" class="btn btn-primary" style="margin-bottom:10px;"onclick='fetchAllProducts("@share.Id")'>
-                                        View Products
-                                    </button>
 	
 		<label style="margin-left:100px;"> Customer Details </label>
 		<div class="column">
 			<input style="margin-left:50px;" type="text" name="customerName" id="name-field" class="checkout-form-field" placeholder="Customer Name">
 			<input style="margin-left:50px;" type="text" name="mobileNumber" id="mobile-number-field" class="checkout-form-field" placeholder="Mobile Number">
+			<input type="submit" value="Checkout" onclick="submit()">
 		</div>
 		
 	</div>
@@ -56,14 +61,14 @@ table, th, td {
 		</div>
 	
 		<div class="container"style="margin-left:50px;">
-			<div id="receipts" style="display:contents">
+			<div id="checkout" style="display:contents">
 				<table class="table table-hover">
 					<thead>
 						<tr>
 							<th>Name</th>
-							<th>Price</th>
-							<th>Category</th>
 							<th>Quantity</th> 
+							<th>Price</th>
+							<th>Total</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -79,19 +84,146 @@ table, th, td {
 </body>
 
 <script>
+	//var itemList = new Array(40); 
+	var itemList = [
+    { 
+        "name": "dummy",
+        "price": 0,
+        "quantity": 0
+    }
+	];
+	let  total = 0;
+	var checkCount = 0;
 	$('#receipts').on('click', 'tbody tr', function() {
 
-		console.log("Number of rows : " + size);
-		//console.log('API row values : ', table.row(this).data());
+		  var productName = $(this).find("td:first-child").text();
+		  var productPrice = $(this).find("td:nth-last-child(3)").text();
+		  var quantity = $(this).find("td:last-child").text();
+		  let productDetails = {name:productName, price:productPrice, quantity: 1};
+		  total = total + (Number(productDetails.price));
+
+		
+         //console.log("length ", itemList.length);
+
+		   if (itemList.length === 1 ){
+		   	for (i=0 ; i < itemList.length; i++){
+		   		if (itemList[i].name === "dummy" ){
+					itemList.pop();
+		   		}
+         	}
+          }
+
+		 checkCount = 0;
+		  for (i=0 ; i < itemList.length; i++){
+		  	console.log("name " + [i], itemList[i].name);
+		  	if (itemList[i].name === productName) {
+		  		console.log("hi");
+				itemList[i].quantity = itemList[i].quantity + 1;
+				checkCount = 1;
+		  	} 
+          }
+
+          console.log("hi count" , checkCount);
+          if (checkCount === 0 ){
+          	itemList.push(productDetails);
+          }
+		
+		
+
+         	/*for (i=0 ; i < itemList.length; i++){
+		   		console.log("name ", itemList[i].name);
+		   		console.log("quantity ", itemList[i].quantity);
+         	}*/
+
+
+                 
+                 $("#checkout tbody").empty();
+       
+       $(itemList).each(function (index, item) {
+	                    console.log("item " + item);
+	                    //console.log(receipts[index]);
+
+	                   $('#checkout tbody').append(
+	                       '<tr><td>' + item.name +
+	                        '</td><td>' + item.quantity +
+	                        '</td><td>' + item.price +
+	                        '</td><td>' + total + 
+	                        '</td></tr>'
+	                    )
+
+	                });
+
+
+
+    /*    $('#checkout tbody').append(
+	                        '<tr><td>' + name +
+	                        '</td><td>' + quantity +
+	                        '</td><td>' + price +
+	                        '</td><td>' + total + 
+	                        '</td></tr>'
+	                    )
+	*/
 	})
-function fetchAllProducts(documentShareId) {
-		$("#receipts tbody").empty();
-        //console.log('http call: ' + uri + "/" + documentShareId)
-        $.ajax({
-            url: "http://localhost:8089/product/product-list",
-            type: "GET",
-            contentType: "application/json;",
-			headers:
+	function fetchAllProducts() {
+			$("#receipts tbody").empty();
+	        //console.log('http call: ' + uri + "/" + documentShareId)
+	        $.ajax({
+	            url: "http://localhost:8089/product/product-list",
+	            type: "GET",
+	            contentType: "application/json;",
+				headers:
+	                    {
+	                        'Accept': 'application/json',
+	                        'Content-Type': 'application/json',
+	                        'Access-Control-Allow-Origin': '*',
+	                        'Access-Control-Allow-Credentials': 'true',
+	                        'requester': '{"username": "admin@asd.com","authorities": "ROLE_ADMIN"}'
+
+	                    },
+	            cache: false,
+	            success: function (receipts) {
+	                //console.log(receipts);
+
+	                $(receipts.data).each(function (index, item) {
+	                    console.log("item " + item);
+	                    //console.log(receipts[index]);
+
+	                   $('#receipts tbody').append(
+	                        '<tr><td>' + item.name +
+	                        '</td><td>' + item.price +
+	                        '</td><td>' + item.category +
+	                        '</td><td>' + item.quantity + 
+	                        '</td></tr>'
+	                    )
+
+	                });
+
+
+
+	            },
+	            error: function (XMLHttpRequest, textStatus, errorThrown) {
+	                console.log(XMLHttpRequest);
+	                console.log(textStatus);
+	                console.log(errorThrown);
+
+	            }
+
+	    });
+	}
+
+	function submit()
+		{
+		
+        let customerName = document.getElementById("name-field").value
+        let phoneNumber = document.getElementById("mobile-number-field").value
+		
+        $.ajax(
+            {
+                url: "http://localhost:8089/checkout",
+                type: "POST",
+                accept: "application/json",
+                contentType: "application/json",
+                headers:
                     {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
@@ -100,34 +232,24 @@ function fetchAllProducts(documentShareId) {
                         'requester': '{"username": "admin@asd.com","authorities": "ROLE_ADMIN"}'
 
                     },
-            cache: false,
-            success: function (receipts) {
-                //console.log(receipts);
+                data: JSON.stringify({
+					checkOutDTOS:  JSON.stringify(itemList),
+                    customerName : customerName.toString,
+                    mobileNumber : phoneNumber.toString(),
+					total: parseInt(total)
+					
+                }),
+                dataType: 'json',
+                success: function (response)
+                {
+                    alert("success");
 
-                $(receipts.data).each(function (index, item) {
-                    console.log("item " + item);
-                    //console.log(receipts[index]);
-
-                   $('#receipts tbody').append(
-                        '<tr><td>' + item.name +
-                        '</td><td>' + item.price +
-                        '</td><td>' + item.category +
-                        '</td><td>' + item.quantity + 
-                        '</td></tr>'
-                    )
-
-                });
-
-
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                console.log(XMLHttpRequest);
-                console.log(textStatus);
-                console.log(errorThrown);
-
+                }
+                , error: function (error) {
+                    alert(error.message);
+                }
             }
-
-        });
+        )
     }
     
 </script>
