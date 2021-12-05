@@ -99,8 +99,8 @@ table, th, td {
 		  var productName = $(this).find("td:first-child").text();
 		  var productPrice = $(this).find("td:nth-last-child(3)").text();
 		  var quantity = $(this).find("td:last-child").text();
-		  let productDetails = {itemName:productName, price: (Number(productPrice)), quantity: 1};
-		  total = total + (Number(productDetails.price));
+		  let productDetails = {itemName:productName, price: (Number(productPrice)), quantity: 1, total: (Number(productPrice))};
+		  //total = total + (Number(productDetails.price));
 
 		
          //console.log("length ", itemList.length);
@@ -119,11 +119,12 @@ table, th, td {
 		  	if (itemList[i].itemName === productName) {
 		  		//console.log("hi");
 				itemList[i].quantity = itemList[i].quantity + 1;
+				itemList[i].total = itemList[i].total + (Number(productPrice));
 				checkCount = 1;
 		  	} 
           }
 
-          console.log("hi count" , checkCount);
+          //console.log("hi count" , checkCount);
           if (checkCount === 0 ){
           	itemList.push(productDetails);
           }
@@ -147,7 +148,7 @@ table, th, td {
 	                       '<tr><td>' + item.itemName +
 	                        '</td><td>' + item.quantity +
 	                        '</td><td>' + item.price +
-	                        '</td><td>' + total + 
+	                        '</td><td>' + item.total + 
 	                        '</td></tr>'
 	                    )
 
