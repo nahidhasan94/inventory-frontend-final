@@ -15,7 +15,7 @@ table, th, td {
 }
 </style>
 </head>
-<body>
+<body onload="fetchAllReceipts()>
   <main id="main-holder">
     <h1>Transection</h1>
 	<div id="receipts" style="display:contents">
@@ -35,13 +35,11 @@ table, th, td {
 			</tbody>
 		</table>
 	</div>
-	 <button type="button" class="btn btn-primary" onclick='fetchAllReceipts("@share.Id")'>
-                                        RECEIPTS
-                                    </button>
+	
   </main>
 </body>
 <script>
-function fetchAllReceipts(documentShareId) {
+function fetchAllReceipts() {
 		$("#receipts tbody").empty();
         //console.log('http call: ' + uri + "/" + documentShareId)
         $.ajax({
@@ -66,7 +64,7 @@ function fetchAllReceipts(documentShareId) {
                     //console.log(receipts[index]);
 					let products= "";
 					for(col = 0; col < item.items.length; col++) {
-					products = item.items[col] + products + ", "
+					products = products + ", " + item.items[col]
 					}
                     $('#receipts tbody').append(
                         '<tr><td>' + item.billNo +

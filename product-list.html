@@ -15,7 +15,7 @@ table, th, td {
 }
 </style>
 </head>
-<body>
+<body onload="fetchAllProduct()>
 
   <main id="main-holder">
     <h1>Product List</h1>
@@ -33,16 +33,13 @@ table, th, td {
 
 			</tbody>
 		</table>
-	
-	 <button type="button" class="btn btn-primary" onclick='fetchAllProduct("@share.Id")'>
-                                        View
-                                    </button>
+
 	</div>
   </main>
 </body>
 
 <script>
-function fetchAllProduct(documentShareId) {
+function fetchAllProduct() {
 		$("#receipts tbody").empty();
         //console.log('http call: ' + uri + "/" + documentShareId)
         $.ajax({
